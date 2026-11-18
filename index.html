@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Flights, Hotel Tariffs and APIs - Thompsons For Travel</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Open+Sans:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+  :root{
+    --navy:#0A52A0;
+    --navy-deep:#073963;
+    --cyan:#00AEEF;
+    --cyan-soft:#E4F6FE;
+    --ink:#1B2430;
+    --slate:#5B6B7C;
+    --slate-bg:#E9EDF1;
+    --paper:#FFFFFF;
+    --green:#17794A;
+    --red:#A9291F;
+    --amber:#B5720A;
+    --green-bg:#EAF6EF;
+    --red-bg:#FBEBEA;
+    --amber-bg:#FCF3E3;
+    --border:#DCE3EA;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--slate-bg);
+    color:var(--ink);
+    font-family:'Open Sans', 'Segoe UI', sans-serif;
+    font-size:14px;
+    line-height:1.6;
+  }
+  .wrap{max-width:1000px;margin:0 auto;padding:0 20px 60px;}
+
+  header.hero{
+    background:linear-gradient(135deg, var(--cyan-soft) 0%, #F3F9FD 60%, #FFFFFF 100%);
+    border-bottom:3px solid var(--cyan);
+    padding:28px 20px 24px;
+  }
+  .hero-inner{max-width:1000px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px;}
+  .logo{display:flex;flex-direction:column;line-height:1;}
+  .logo .t4t{font-family:'Nunito',sans-serif;font-weight:900;font-size:22px;color:var(--navy-deep);letter-spacing:.2px;}
+  .logo .ft{font-family:'Space Mono',monospace;font-weight:700;font-size:10px;letter-spacing:2px;color:var(--cyan);margin-top:3px;text-transform:uppercase;}
+  .eyebrow{font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:1.5px;font-size:10.5px;color:var(--slate);margin-bottom:6px;}
+  h1{font-family:'Nunito',sans-serif;font-weight:900;font-size:27px;color:var(--navy-deep);margin:0 0 6px;}
+  .hero-desc{color:var(--slate);max-width:520px;font-size:13.5px;}
+  .print-btn{
+    position:fixed;top:18px;right:18px;z-index:50;
+    background:var(--paper);border:1px solid var(--border);color:var(--navy);
+    font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;
+    padding:9px 16px;border-radius:999px;cursor:pointer;box-shadow:0 2px 6px rgba(10,82,160,.15);
+  }
+  .print-btn:hover{background:var(--cyan-soft);}
+
+  nav.toc{
+    max-width:1000px;margin:22px auto 0;padding:0 20px;
+    display:flex;flex-wrap:wrap;gap:8px;
+  }
+  nav.toc a{
+    font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.5px;text-transform:uppercase;
+    background:var(--paper);border:1px solid var(--border);color:var(--navy);
+    padding:7px 13px;border-radius:999px;text-decoration:none;
+  }
+  nav.toc a:hover{background:var(--cyan-soft);border-color:var(--cyan);}
+
+  .intro-card{
+    background:var(--paper);border:1px solid var(--border);border-radius:12px;
+    box-shadow:0 1px 2px rgba(10,20,40,.05), 0 6px 18px rgba(10,20,40,.05);
+    padding:20px 24px;margin-top:22px;display:flex;gap:16px;align-items:flex-start;
+  }
+  .intro-card .ic{font-size:26px;line-height:1;}
+  .intro-card p{margin:0;color:var(--ink);}
+  .intro-card strong{color:var(--navy-deep);}
+
+  .legend{
+    background:var(--paper);border:1px solid var(--border);border-radius:12px;
+    box-shadow:0 1px 2px rgba(10,20,40,.05), 0 6px 18px rgba(10,20,40,.05);
+    padding:20px 24px;margin-top:16px;scroll-margin-top:20px;
+  }
+  .legend h3{font-family:'Nunito',sans-serif;font-weight:800;font-size:16px;color:var(--navy-deep);margin:0 0 4px;}
+  .legend .sub{color:var(--slate);font-size:12.5px;margin-bottom:14px;}
+  .legend-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;}
+  .legend-item{display:flex;gap:10px;align-items:flex-start;background:var(--slate-bg);border-radius:6px;padding:10px 12px;}
+  .legend-item .abbr{
+    font-family:'Space Mono',monospace;font-weight:700;font-size:11px;color:#fff;background:var(--navy);
+    border-radius:999px;padding:2px 9px;flex:0 0 auto;margin-top:1px;
+  }
+  .legend-item b{display:block;font-size:12.5px;color:var(--ink);}
+  .legend-item span.d{font-size:12px;color:var(--slate);}
+
+  .part-title{
+    margin:36px 0 14px;display:flex;align-items:center;gap:12px;
+  }
+  .part-title .num{
+    width:30px;height:30px;border-radius:6px;background:var(--navy);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-weight:700;font-size:13px;flex:0 0 30px;
+  }
+  .part-title h2{font-family:'Nunito',sans-serif;font-weight:800;font-size:19px;color:var(--navy-deep);margin:0;}
+  .part-title .tag{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--slate);}
+
+  section.card{
+    background:var(--paper);border:1px solid var(--border);border-radius:12px;
+    box-shadow:0 1px 2px rgba(10,20,40,.05), 0 6px 18px rgba(10,20,40,.05);
+    padding:22px 24px;margin-bottom:16px;scroll-margin-top:20px;
+  }
+  .card-head{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+  .badge{
+    width:28px;height:28px;border-radius:6px;background:var(--cyan-soft);color:var(--navy);
+    display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-weight:700;font-size:12px;flex:0 0 28px;
+  }
+  .card h3{font-family:'Nunito',sans-serif;font-weight:800;font-size:16.5px;color:var(--navy-deep);margin:0;}
+  .card p{margin:8px 0;}
+  .card ul{margin:8px 0;padding-left:20px;}
+  .card li{margin-bottom:5px;}
+
+  .callout{
+    border-radius:12px;padding:14px 18px;margin:14px 0;display:flex;gap:12px;align-items:flex-start;font-size:13px;
+  }
+  .callout .ic{font-size:17px;line-height:1.3;}
+  .callout-amber{background:var(--amber-bg);border:1px solid #EAD3A5;color:#6B4B0A;}
+  .callout-blue{background:var(--cyan-soft);border:1px solid #B7E4F7;color:var(--navy-deep);}
+  .callout > div > strong:first-child{display:block;margin-bottom:2px;}
+
+  .step-list{counter-reset:step;list-style:none;padding:0;margin:10px 0;}
+  .step-list > li{
+    counter-increment:step;position:relative;padding-left:34px;margin-bottom:10px;
+  }
+  .step-list > li::before{
+    content:counter(step);position:absolute;left:0;top:0;
+    width:22px;height:22px;border-radius:50%;background:var(--navy);color:#fff;
+    font-family:'Space Mono',monospace;font-size:11px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .sub-block{background:var(--slate-bg);border-radius:6px;padding:10px 14px;margin:8px 0 8px 34px;}
+  .sub-block p{margin:4px 0;}
+
+  /* Calendar pair */
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0;}
+  .pair-item{background:var(--slate-bg);border-radius:6px;padding:12px 14px;}
+  .pair-item .lbl{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--slate);}
+  .pair-item b{display:block;font-family:'Nunito',sans-serif;font-weight:800;color:var(--navy-deep);font-size:14.5px;margin:2px 0;}
+  .pair-item .arrow{color:var(--cyan);font-weight:700;}
+
+  /* Season pills */
+  .pills{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;}
+  .pill{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.5px;text-transform:uppercase;border-radius:999px;padding:5px 13px;border:1px solid var(--border);background:var(--paper);color:var(--navy);}
+
+  /* Free text example */
+  .code-chip{
+    display:inline-block;font-family:'Space Mono',monospace;font-weight:700;font-size:15px;color:var(--navy-deep);
+    background:var(--cyan-soft);border:1px dashed var(--cyan);border-radius:8px;padding:6px 14px;margin:4px 0;letter-spacing:1px;
+  }
+
+  /* Price point ladder */
+  .ladder{margin:14px 0 6px;}
+  .ladder-row{display:grid;grid-template-columns:90px 1fr 90px;align-items:center;gap:10px;margin-bottom:8px;}
+  .ladder-row .pp,.ladder-row .rc{
+    font-family:'Space Mono',monospace;font-weight:700;font-size:13px;text-align:center;border-radius:999px;padding:6px 0;
+  }
+  .ladder-row .pp{background:var(--navy);color:#fff;}
+  .ladder-row .rc{background:var(--paper);color:var(--navy);border:1.5px solid var(--navy);}
+  .ladder-row .bar{height:10px;border-radius:999px;background:var(--slate-bg);position:relative;overflow:hidden;}
+  .ladder-row .bar span{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:linear-gradient(90deg,var(--cyan),var(--navy));}
+  .ladder-head{display:grid;grid-template-columns:90px 1fr 90px;gap:10px;margin-bottom:8px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--slate);text-align:center;}
+  .ladder-note{display:flex;justify-content:space-between;font-size:12px;color:var(--slate);margin-top:4px;padding:0 100px;}
+  .ladder-row.default .pp{background:var(--amber);}
+  .ladder-row.default .rc{border-color:var(--amber);color:var(--amber);}
+  .default-tag{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--amber);}
+
+  /* Checklist */
+  .check{list-style:none;padding:0;margin:8px 0;}
+  .check li{position:relative;padding-left:28px;margin-bottom:8px;}
+  .check li::before{content:"";position:absolute;left:0;top:3px;width:16px;height:16px;border-radius:4px;border:2px solid var(--cyan);background:var(--paper);}
+
+
+  /* Video buttons */
+  .watch{display:inline-flex;align-items:center;gap:8px;margin:12px 0 2px;padding:8px 16px 8px 10px;border-radius:999px;background:var(--navy);color:#fff;text-decoration:none;font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;box-shadow:0 2px 6px rgba(10,82,160,.2);}
+  .watch:hover{background:var(--navy-deep);}
+  .watch .play{width:22px;height:22px;border-radius:50%;background:var(--cyan);display:flex;align-items:center;justify-content:center;font-size:9px;padding-left:2px;}
+  .watch .len{font-family:'Space Mono',monospace;font-weight:400;font-size:10.5px;opacity:.85;}
+  .watch-row{display:flex;flex-wrap:wrap;gap:8px;}
+  .videos{background:var(--paper);border:1px solid var(--border);border-radius:12px;box-shadow:0 1px 2px rgba(10,20,40,.05), 0 6px 18px rgba(10,20,40,.05);padding:20px 24px;margin-top:16px;scroll-margin-top:20px;}
+  .videos h3{font-family:'Nunito',sans-serif;font-weight:800;font-size:16px;color:var(--navy-deep);margin:0 0 4px;}
+  .videos .sub{color:var(--slate);font-size:12.5px;margin-bottom:14px;}
+  .vlist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .vlist a{display:flex;align-items:center;gap:10px;background:var(--slate-bg);border-radius:6px;padding:10px 12px;text-decoration:none;color:var(--ink);border:1px solid transparent;}
+  .vlist a:hover{border-color:var(--cyan);background:var(--cyan-soft);}
+  .vlist .vn{width:24px;height:24px;border-radius:6px;background:var(--navy);color:#fff;font-family:'Space Mono',monospace;font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center;flex:0 0 24px;}
+  .vlist b{font-size:12.5px;display:block;line-height:1.35;}
+  .vlist .len{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--slate);}
+
+
+  /* Dot key */
+  .dots{display:grid;gap:8px;margin:12px 0;}
+  .dot-row{display:flex;gap:12px;align-items:flex-start;background:var(--slate-bg);border-radius:6px;padding:10px 14px;}
+  .dot-row b{display:block;color:var(--navy-deep);}
+  .dot{width:16px;height:16px;border-radius:50%;flex:0 0 16px;margin-top:3px;}
+  .dot.g{background:#2BB24C;} .dot.a{background:#F0A21A;} .dot.r{background:#D93A2E;}
+
+  footer{
+    max-width:1000px;margin:30px auto 0;padding:16px 20px;color:var(--slate);
+    font-size:11.5px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;
+    border-top:1px solid var(--border);
+  }
+
+  @media print{
+    .print-btn, nav.toc, .watch, .videos{display:none;}
+    body{background:#fff;}
+    section.card, .legend, .intro-card{box-shadow:none;break-inside:avoid;page-break-inside:avoid;}
+  }
+  @media (max-width:640px){
+    h1{font-size:22px;}
+    .hero-inner{align-items:flex-start;}
+    .print-btn{position:static;display:block;margin:12px auto 0;}
+    .pair{grid-template-columns:1fr;}
+    section.card,.legend,.intro-card{padding:18px 16px;}
+    .ladder-row,.ladder-head{grid-template-columns:64px 1fr 64px;}
+    .ladder-note{padding:0 74px;}
+    .sub-block{margin-left:0;}
+    .vlist{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<button class="print-btn" onclick="window.print()">🖨️ Print / Save PDF</button>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="logo"><span class="t4t">Thompsons</span><span class="ft">For Travel</span></div>
+    </div>
+    <div style="text-align:left;">
+      <div class="eyebrow">Reservations Training Guide</div>
+      <h1>Flights, Hotel Tariffs and APIs</h1>
+      <div class="hero-desc">How to book website flights and flight allocations, tell hotel tariffs and APIs apart, and handle packages, tours and last-minute bookings in UDMS.</div>
+    </div>
+  </div>
+</header>
+
+<nav class="toc">
+  <a href="#videos">Videos</a>
+  <a href="#key">Quick Reference</a>
+  <a href="#s1">1. Website Flights</a>
+  <a href="#s2">2. Load in UDMS</a>
+  <a href="#s3">3. Allocations</a>
+  <a href="#s4">4. Tariffs</a>
+  <a href="#s5">5. APIs</a>
+  <a href="#s6">6. Packages</a>
+  <a href="#s7">7. Tours</a>
+  <a href="#s8">8. Last Minute</a>
+  <a href="#checklist">Final Check</a>
+</nav>
+
+<div class="wrap">
+
+  <div class="intro-card">
+    <div class="ic">✈️</div>
+    <p><strong>Not every flight or hotel is booked the same way.</strong> Some flights must be booked on the airline's own website, some come from our allocations, and hotels can come from a <strong>tariff</strong> (our loaded contract rates) or an <strong>API</strong> (live rates straight from the hotel). Knowing which is which keeps your quotes accurate and avoids clients arriving without tickets or rooms.</p>
+  </div>
+
+  <div class="videos" id="videos">
+    <h3>🎬 Watch the Training</h3>
+    <div class="sub">Chantelle walks through each topic live in UDMS. Each video opens in SharePoint, so sign in with your Thompsons account if asked.</div>
+    <ul class="vlist">
+      <li><a href="https://vb001437.sharepoint.com/sites/ThompsonsForTravelFreshChat/_layouts/15/stream.aspx?id=%2Fsites%2FThompsonsForTravelFreshChat%2FTraining%20Library%2FFlights%20Tariffs%20and%20APIs%20Videos%2FFlights%5F1%5FWebsite%5Fflights%5FFastJet%2Emp4" target="_blank" rel="noopener"><span class="vn">1</span><span><b>Website flights: FastJet</b><span class="len">8 min</span></span></a></li>
+      <li><a href="https://vb001437.sharepoint.com/sites/ThompsonsForTravelFreshChat/_layouts/15/stream.aspx?id=%2Fsites%2FThompsonsForTravelFreshChat%2FTraining%20Library%2FFlights%20Tariffs%20and%20APIs%20Videos%2FFlights%5F2%5FLoading%5Fa%5Fwebsite%5Fflight%5Fin%5FUDMS%2Emp4" target="_blank" rel="noopener"><span class="vn">2</span><span><b>Loading a website flight in UDMS</b><span class="len">9 min</span></span></a></li>
+      <li><a href="https://vb001437.sharepoint.com/sites/ThompsonsForTravelFreshChat/_layouts/15/stream.aspx?id=%2Fsites%2FThompsonsForTravelFreshChat%2FTraining%20Library%2FFlights%20Tariffs%20and%20APIs%20Videos%2FFlights%5F3%5FFlight%5Fallocations%2Emp4" target="_blank" rel="noopener"><span class="vn">3</span><span><b>Flight allocations</b><span class="len">12 min</span></span></a></li>
+      <li><a href="https://vb001437.sharepoint.com/sites/ThompsonsForTravelFreshChat/_layouts/15/stream.aspx?id=%2Fsites%2FThompsonsForTravelFreshChat%2FTraining%20Library%2FFlights%20Tariffs%20and%20APIs%20Videos%2FFlights%5F4%5FHotel%5Ftariffs%5Fand%5Fallocations%2Emp4" target="_blank" rel="noopener"><span class="vn">4</span><span><b>Hotel tariffs and allocations</b><span class="len">13 min</span></span></a></li>
+      <li><a href="https://vb001437.sharepoint.com/sites/ThompsonsForTravelFreshChat/_layouts/15/stream.aspx?id=%2Fsites%2FThompsonsForTravelFreshChat%2FTraining%20Library%2FFlights%20Tariffs%20and%20APIs%20Videos%2FFlights%5F5%5FHotel%5FAPIs%2Emp4" target="_blank" rel="noopener"><span class="vn">5</span><span><b>Hotel APIs</b><span class="len">6 min</span></span></a></li>
+      <li><a href="https://vb001437.sharepoint.com/sites/ThompsonsForTravelFreshChat/_layouts/15/stream.aspx?id=%2Fsites%2FThompsonsForTravelFreshChat%2FTraining%20Library%2FFlights%20Tariffs%20and%20APIs%20Videos%2FFlights%5F6%5FPackages%2Emp4" target="_blank" rel="noopener"><span class="vn">6</span><span><b>Packages</b><span class="len">7 min</span></span></a></li>
+      <li><a href="https://vb001437.sharepoint.com/sites/ThompsonsForTravelFreshChat/_layouts/15/stream.aspx?id=%2Fsites%2FThompsonsForTravelFreshChat%2FTraining%20Library%2FFlights%20Tariffs%20and%20APIs%20Videos%2FFlights%5F7%5FTours%5Fand%5Fchoosing%5Fsuppliers%2Emp4" target="_blank" rel="noopener"><span class="vn">7</span><span><b>Tours and choosing suppliers</b><span class="len">13 min</span></span></a></li>
+      <li><a href="https://vb001437.sharepoint.com/sites/ThompsonsForTravelFreshChat/_layouts/15/stream.aspx?id=%2Fsites%2FThompsonsForTravelFreshChat%2FTraining%20Library%2FFlights%20Tariffs%20and%20APIs%20Videos%2FFlights%5F8%5FAPI%5Freferences%5Fand%5Flast%5Fminute%5Fbookings%2Emp4" target="_blank" rel="noopener"><span class="vn">8</span><span><b>API references and last-minute bookings</b><span class="len">7 min</span></span></a></li>
+    </ul>
+  </div>
+
+  <div class="legend" id="key">
+    <h3>Quick Reference: Terms Used</h3>
+    <div class="sub">These words come up throughout UDMS and this guide.</div>
+    <div class="legend-grid">
+      <div class="legend-item"><span class="abbr">Tariff</span><div><b>Loaded contract rates</b><span class="d">Rates we have contracted with a supplier and loaded into UDMS.</span></div></div>
+      <div class="legend-item"><span class="abbr">API</span><div><b>Live rates</b><span class="d">Rates and availability pulled live from the supplier's own system.</span></div></div>
+      <div class="legend-item"><span class="abbr">Inventory</span><div><b>Allocation</b><span class="d">Seats or rooms set aside for us. Shown as the number available.</span></div></div>
+      <div class="legend-item"><span class="abbr">Carrier</span><div><b>Flight Carrier</b><span class="d">Where you load flights by hand in UDMS, and where SAA allocations sit.</span></div></div>
+      <div class="legend-item"><span class="abbr">BSP</span><div><b>Airline settlement</b><span class="d">How Accounts pays for tickets issued on Amadeus, with fare and airport taxes paid separately.</span></div></div>
+      <div class="legend-item"><span class="abbr">Ref</span><div><b>Channel manager reference</b><span class="d">The booking reference an API booking gets once requested.</span></div></div>
+    </div>
+  </div>
+
+  <!-- ============ PART A ============ -->
+  <div class="part-title"><div class="num">A</div><div><div class="tag">Part A</div><h2>Flights</h2></div></div>
+
+  <section class="card" id="s1">
+    <div class="card-head"><div class="badge">1</div><h3>Website Flights: FastJet</h3></div>
+    <p>Some regional airlines have their own website behind them. Most of the time FlySafair and LIFT pull through in UDMS as normal. <strong>FastJet is different:</strong> always book it on the FastJet agent portal, then load it in UDMS on Flight Carrier (Step 2). This mostly comes up with Victoria Falls.</p>
+    <div class="callout callout-amber"><div class="ic">⚠️</div><div><strong>Do not book FastJet through Hahn Air</strong>FastJet can also show in API flights under Hahn Air. We have had bookings priced and ticketed on Hahn Air where the client got to the airport and there were no tickets, so the flights had to be rebooked on the FastJet website. Everything FastJet is booked on the website, for safety.</div></div>
+    <ul>
+      <li><strong>Rates come from the agent portal</strong>, using your own FastJet login.</li>
+      <li><strong>The website is often much cheaper</strong> than the Hahn Air price, sometimes by R3,000 to R4,000 per person. Don't assume SAA is cheaper just because the Hahn Air price looks high; check FastJet.</li>
+      <li><strong>Morning flights usually cost more.</strong> A slightly later flight can be cheaper and still gets clients there in time for afternoon plans like a sunset cruise.</li>
+    </ul>
+    <p>On the FastJet results you'll see the flight number, date, departure and arrival times, then the <strong>net fare</strong> and <strong>airport taxes</strong>. Both are totals for all passengers, for that flight.</p>
+    <div class="watch-row"><a class="watch" href="https://vb001437.sharepoint.com/sites/ThompsonsForTravelFreshChat/_layouts/15/stream.aspx?id=%2Fsites%2FThompsonsForTravelFreshChat%2FTraining%20Library%2FFlights%20Tariffs%20and%20APIs%20Videos%2FFlights%5F1%5FWebsite%5Fflights%5FFastJet%2Emp4" target="_blank" rel="noopener"><span class="play">▶</span>Watch this step <span class="len">8 min</span></a></div>
+  </section>
+
+  <section class="card" id="s2">
+    <div class="card-head"><div class="badge">2</div><h3>Load a Website Flight in UDMS</h3></div>
+    <ol class="step-list">
+      <li><strong>Add up the totals from the website:</strong> both fares (out and back) together, and both airport tax amounts together.</li>
+      <li><strong>Create your quote</strong> as normal and add the passengers.</li>
+      <li><strong>Add the flight on Flight Carrier:</strong> return, airports, supplier FastJet, economy, both dates, departure and arrival times, and the flight numbers (for example FN 8502 out and FN 8501 back).</li>
+      <li><strong>Fare line:</strong> divide the total fare by the number of passengers and enter it per person. Leave the sell price blank so the <strong>14% margin</strong> is added.
+        <div class="sub-block"><p>Infants usually pay little more than one or two taxes, so work them out separately.</p></div>
+      </li>
+      <li><strong>Airport taxes as a separate line:</strong> under Extra, add an ad hoc for the taxes (same dates, supplier FastJet). Divide the total taxes per person and enter the <strong>same amount as buy and sell</strong>. We don't earn on airport taxes.</li>
+      <li><strong>Check the total</strong> against the website. Small rounding differences are normal; you can adjust them before you issue.</li>
+    </ol>
+    <div class="callout callout-blue"><div class="ic">💡</div><div><strong>Why fare and taxes are separate</strong>Flights that fall under Amadeus are paid through BSP, and Accounts pays the fare and the airport taxes separately. So for FastJet, FlySafair, LIFT and anything on Amadeus: fare first, airport taxes on their own line.</div></div>
+    <div class="callout callout-amber"><div class="ic">💱</div><div><strong>The exception: flights in another currency</strong>When a flight is booked on an airline's own website in another currency (for example Turkish Airlines domestic flights in Turkey, or EasyJet), put the fare and taxes together in <strong>one line</strong>. UDMS won't have that currency, so convert it to US dollars or rand, add a little extra, enter the buy price and leave the sell price blank.</div></div>
+    <p>If an airline is on Amadeus but not loaded in UDMS (as with some South American flights), it won't pull through, so load it on Flight Carrier the same way.</p>
+    <div class="watch-row"><a class="watch" href="https://vb001437.sharepoint.com/sites/ThompsonsForTravelFreshChat/_layouts/15/stream.aspx?id=%2Fsites%2FThompsonsForTravelFreshChat%2FTraining%20Library%2FFlights%20Tariffs%20and%20APIs%20Videos%2FFlights%5F2%5FLoading%5Fa%5Fwebsite%5Fflight%5Fin%5FUDMS%2Emp4" target="_blank" rel="noopener"><span class="play">▶</span>Watch this step <span class="len">9 min</span></a></div>
+  </section>
+
+  <section class="card" id="s3">
+    <div class="card-head"><div class="badge">3</div><h3>Flight Allocations</h3></div>
+    <p>We only use flight allocations in our <strong>peak seasons</strong>, mainly <strong>SAA</strong> and <strong>Air Mauritius</strong> for Mauritius. Sometimes there are set departures for Zanzibar too, depending on the season.</p>
+    <div class="pair">
+      <div class="pair-item"><div class="lbl">Air Mauritius</div><b>Pulls through automatically</b>Book it in the normal flight search. <strong>Negotiated</strong> means it's our rate. <strong>Published</strong> is the normal public fare, often around double.</div>
+      <div class="pair-item"><div class="lbl">SAA</div><b>Booked on Flight Carrier</b>Search with only the departure, arrival and dates (no airline). The loaded allocation shows its price and how many seats are left.</div>
+    </div>
+    <ol class="step-list">
+      <li><strong>Check availability:</strong> ticketing sends an email listing allocation dates that still have seats.</li>
+      <li><strong>Pull the allocation through</strong> on Flight Carrier and tick both the fare and the taxes.</li>
+      <li><strong>Get the real airport taxes from Amadeus.</strong> The taxes on the allocation aren't kept up to date, so price the same SAA flights in Amadeus and use those taxes.</li>
+      <li><strong>Add the taxes per person</strong> on a separate taxes line, as in Step 2. Adults and children pay different taxes, so check both.</li>
+      <li><strong>To book:</strong> change the quote to a booking and request it. Ticketing books it on Amadeus in their group booking and sends it to you. Once the client has paid, ask ticketing to issue.</li>
+    </ol>
+    <div class="callout callout-blue"><div class="ic">🎫</div><div><strong>Tickets are issued straight away now</strong>With SAA and Air Mauritius allocations, clients no longer wait until a few days before travel. Once paid and issued, the tickets come through immediately.</div></div>
+    <div class="callout callout-amber"><div class="ic">⚠️</div><div><strong>Always include the taxes</strong>It's easy to quote an allocation without its airport taxes. Check the taxes line is there before you send the quote.</div></div>
+    <div class="callout callout-amber"><div class="ic">❓</div><div><strong>To confirm</strong>Who sends the allocation availability email (the name isn't clear in the recording).</div></div>
+    <div class="watch-row"><a class="watch" href="https://vb001437.sharepoint.com/sites/ThompsonsForTravelFreshChat/_layouts/15/stream.aspx?id=%2Fsites%2FThompsonsForTravelFreshChat%2FTraining%20Library%2FFlights%20Tariffs%20and%20APIs%20Videos%2FFlights%5F3%5FFlight%5Fallocations%2Emp4" target="_blank" rel="noopener"><span class="play">▶</span>Watch this step <span class="len">12 min</span></a></div>
+  </section>
+
+  <!-- ============ PART B ============ -->
+  <div class="part-title"><div class="num">B</div><div><div class="tag">Part B</div><h2>Hotels: Tariffs and APIs</h2></div></div>
+
+  <section class="card" id="s4">
+    <div class="card-head"><div class="badge">4</div><h3>Hotel Tariffs and Allocations</h3></div>
+    <p>A <strong>tariff</strong> is our loaded contract rate with the hotel. Some hotels also give us <strong>inventory</strong> (an allocation of rooms). When we do buy allocation, it's usually only <strong>3 to 5 rooms</strong>. A figure of <strong>99</strong> doesn't mean 99 rooms; it means the hotel hasn't told us of any stop sell yet.</p>
+    <div class="dots">
+      <div class="dot-row"><span class="dot g"></span><div><b>Green: good to go</b>We still have rooms and haven't heard of any stop sells. Book with confidence.</div></div>
+      <div class="dot-row"><span class="dot a"></span><div><b>Amber: partial</b>Some nights are blocked out or limited. Click it and scroll to your dates to see which nights.</div></div>
+      <div class="dot-row"><span class="dot r"></span><div><b>Red: no more rooms in our inventory</b>This doesn't mean the hotel is full. It means it's <strong>on request</strong>: check the hotel's website or phone them.</div></div>
+    </div>
+    <ul>
+      <li><strong>You can quote a red or amber hotel</strong> on our contract rate, but <strong>check availability before you book</strong>.</li>
+      <li><strong>If a client asks for one specific hotel,</strong> check availability before you even quote.</li>
+      <li><strong>Rate queries:</strong> hover over the rate to see it in the hotel's currency. Check it matches our contract before taking it up with the supplier.</li>
+    </ul>
+    <div class="callout callout-amber"><div class="ic">🎄</div><div><strong>Take extra care over Christmas, New Year and Easter</strong>In very high season, a hotel's contract may say our rate falls away once they send a stop sell, even if they still have rooms. Phone the hotel to confirm they will honour our rate. This happens most with Mozambique, Thailand and Bali, and with European and Far East hotels.</div></div>
+    <div class="callout callout-blue"><div class="ic">💡</div><div><strong>Dynamic rates</strong>Some hotels (for example in Zanzibar) have dynamic rates. If the API shows a higher rate than the tariff, use the API rate.</div></div>
+    <div class="watch-row"><a class="watch" href="https://vb001437.sharepoint.com/sites/ThompsonsForTravelFreshChat/_layouts/15/stream.aspx?id=%2Fsites%2FThompsonsForTravelFreshChat%2FTraining%20Library%2FFlights%20Tariffs%20and%20APIs%20Videos%2FFlights%5F4%5FHotel%5Ftariffs%5Fand%5Fallocations%2Emp4" target="_blank" rel="noopener"><span class="play">▶</span>Watch this step <span class="len">13 min</span></a></div>
+  </section>
+
+  <section class="card" id="s5">
+    <div class="card-head"><div class="badge">5</div><h3>Hotel APIs</h3></div>
+    <p>API results come live from the hotel's own system, so the availability is real and the rates are guaranteed. You can see exactly how many rooms are left.</p>
+    <ul>
+      <li><strong>Need a quick confirmation?</strong> Use the API.</li>
+      <li><strong>The tariff and API rate should be close.</strong> Small differences of a few hundred rand are usually the rate of exchange.</li>
+      <li><strong>Check the rate type.</strong> Some rates in UDMS are master rates for non-South African residents. Don't use a non-resident rate for South African clients; the API is usually cheaper anyway.</li>
+    </ul>
+    <div class="callout callout-blue"><div class="ic">🔁</div><div><strong>Remember the peak season rule</strong>No inventory doesn't mean fully booked, and you can still use the rate. Over Christmas, New Year and Easter, confirm with the hotel first.</div></div>
+    <div class="watch-row"><a class="watch" href="https://vb001437.sharepoint.com/sites/ThompsonsForTravelFreshChat/_layouts/15/stream.aspx?id=%2Fsites%2FThompsonsForTravelFreshChat%2FTraining%20Library%2FFlights%20Tariffs%20and%20APIs%20Videos%2FFlights%5F5%5FHotel%5FAPIs%2Emp4" target="_blank" rel="noopener"><span class="play">▶</span>Watch this step <span class="len">6 min</span></a></div>
+  </section>
+
+  <!-- ============ PART C ============ -->
+  <div class="part-title"><div class="num">C</div><div><div class="tag">Part C</div><h2>Packages, Tours and Suppliers</h2></div></div>
+
+  <section class="card" id="s6">
+    <div class="card-head"><div class="badge">6</div><h3>Packages</h3></div>
+    <p>Set packages (for example Egypt, Italy by rail and Vietnam) are a <strong>guideline</strong>. The hotels aren't always guaranteed, especially at busy times or big events, when the supplier may need a different hotel and add a supplement. The only packages we haven't had issues with are Turkey.</p>
+    <ul>
+      <li><strong>Check availability on the rate</strong> before you tell the client to pay.</li>
+      <li><strong>Packages often don't name the hotel</strong> (for example "4-star in Cairo"). This is on purpose.</li>
+      <li><strong>Check what's included:</strong> transfers, meals, domestic flights and tours.</li>
+    </ul>
+    <div class="callout callout-blue"><div class="ic">🖥️</div><div><strong>Web enquiry with a TH number?</strong>Don't just copy the package across and recalculate. Open the package on one screen and UDMS on the other, and build it manually item by item. Check every hotel is still available, and always recheck the flights and transfers.</div></div>
+    <div class="watch-row"><a class="watch" href="https://vb001437.sharepoint.com/sites/ThompsonsForTravelFreshChat/_layouts/15/stream.aspx?id=%2Fsites%2FThompsonsForTravelFreshChat%2FTraining%20Library%2FFlights%20Tariffs%20and%20APIs%20Videos%2FFlights%5F6%5FPackages%2Emp4" target="_blank" rel="noopener"><span class="play">▶</span>Watch this step <span class="len">7 min</span></a></div>
+  </section>
+
+  <section class="card" id="s7">
+    <div class="card-head"><div class="badge">7</div><h3>Tours and Choosing Suppliers</h3></div>
+    <p><strong>Tours</strong> is where you find sightseeing tours for a city, and guided tours on set dates. <strong>Packages</strong> aren't fully guided and don't run on set dates; some include a guide for sightseeing only.</p>
+    <ul>
+      <li><strong>Guided tours have a minimum number of people.</strong> Read the tour rules (for example minimum 6, maximum 34). If the tour doesn't fill up, it may not run, even after it's confirmed. Make sure the client knows.</li>
+      <li><strong>Quoting for two people?</strong> Change the room to a double, or the tour may quote for more people than you need.</li>
+      <li><strong>Ask the supplier which hotel they will confirm,</strong> or ask for the specific hotel you quoted. "Same star rating" doesn't always mean the same quality.</li>
+      <li><strong>Check whether flights are included</strong>, and add any flights needed to get clients to the start of the package.</li>
+    </ul>
+    <div class="callout callout-blue"><div class="ic">🤝</div><div><strong>Book with our own supplier where we have one</strong>If we have a supplier in that country, book as much as possible with them, so they can sort out any issues and everything is on one voucher. Hotels that pull through on Destinations of the World vary in quality, so check the hotel and its location before you use one.</div></div>
+    <div class="watch-row"><a class="watch" href="https://vb001437.sharepoint.com/sites/ThompsonsForTravelFreshChat/_layouts/15/stream.aspx?id=%2Fsites%2FThompsonsForTravelFreshChat%2FTraining%20Library%2FFlights%20Tariffs%20and%20APIs%20Videos%2FFlights%5F7%5FTours%5Fand%5Fchoosing%5Fsuppliers%2Emp4" target="_blank" rel="noopener"><span class="play">▶</span>Watch this step <span class="len">13 min</span></a></div>
+  </section>
+
+  <!-- ============ PART D ============ -->
+  <div class="part-title"><div class="num">D</div><div><div class="tag">Part D</div><h2>Confirmations and Last-Minute Bookings</h2></div></div>
+
+  <section class="card" id="s8">
+    <div class="card-head"><div class="badge">8</div><h3>API References and Last-Minute Bookings</h3></div>
+    <ol class="step-list">
+      <li><strong>Request the API booking.</strong> A green tick and a reference appear next to it.</li>
+      <li><strong>Click the item</strong> to open its details and scroll down to the <strong>channel manager reference</strong>.</li>
+      <li><strong>Sun City (and some Cape Town hotels):</strong> this reference is reliable, so you can use it to confirm straight away.</li>
+      <li><strong>International APIs</strong> (for example Tour East): the channel manager reference isn't always right, so wait for the supplier to add theirs.</li>
+    </ol>
+    <div class="callout callout-amber"><div class="ic">⏱️</div><div><strong>Last-minute bookings</strong>
+      Accommodation must be confirmed before you issue flights.<br>
+      Clients pay by card, because a bank transfer can take a day or two to reflect.<br>
+      Take full ownership: don't leave a booking that travels tomorrow for someone else to finish.<br>
+      For international bookings, allow at least two days, because of time differences and weekends.</div></div>
+    <div class="callout callout-blue"><div class="ic">💬</div><div><strong>Quick quotes while on chat</strong>Chat always comes first, but if something quick like Sun City comes in, send it out while you're on chat rather than leaving it until later. Speed comes with practice; quality still matters.</div></div>
+    <div class="watch-row"><a class="watch" href="https://vb001437.sharepoint.com/sites/ThompsonsForTravelFreshChat/_layouts/15/stream.aspx?id=%2Fsites%2FThompsonsForTravelFreshChat%2FTraining%20Library%2FFlights%20Tariffs%20and%20APIs%20Videos%2FFlights%5F8%5FAPI%5Freferences%5Fand%5Flast%5Fminute%5Fbookings%2Emp4" target="_blank" rel="noopener"><span class="play">▶</span>Watch this step <span class="len">7 min</span></a></div>
+  </section>
+
+  <section class="card" id="checklist">
+    <div class="card-head"><div class="badge">✓</div><h3>Final Check Before Sending</h3></div>
+    <ul class="check">
+      <li>FastJet booked on the FastJet website, not through Hahn Air</li>
+      <li>Website flights loaded on Flight Carrier with the fare per person and the sell price left blank</li>
+      <li>Airport taxes on their own line, with the same buy and sell price</li>
+      <li>Flights in another currency loaded as one line, converted with a little extra</li>
+      <li>SAA allocation taxes checked in Amadeus, and a taxes line added</li>
+      <li>Red or amber hotels: availability checked before booking</li>
+      <li>Christmas, New Year or Easter: hotel confirmed it will honour our rate</li>
+      <li>Package hotels, flights and transfers rechecked, not just copied</li>
+      <li>Tour minimum numbers explained to the client</li>
+      <li>Last minute: accommodation confirmed before flights are issued, and paid by card</li>
+    </ul>
+  </section>
+
+</div>
+
+<footer>
+  <span>Thompsons For Travel - Flights, Hotel Tariffs and APIs - Reservations Training Guide</span>
+  <span>Based on the reservations team training, October 2026</span>
+</footer>
+
+</body>
+</html>
